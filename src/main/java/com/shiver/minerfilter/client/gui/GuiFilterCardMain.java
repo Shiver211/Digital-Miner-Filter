@@ -223,9 +223,14 @@ public class GuiFilterCardMain extends GuiContainer {
         
         int rendered = Math.min(filters.tagCount() - filterScrollIndex, VISIBLE_FILTERS);
         for (int i = 0; i < rendered; i++) {
-            MinerFilter filter = MinerFilter.readFromNBT(filters.getCompoundTagAt(filterScrollIndex + i));
+            NBTTagCompound tag = filters.getCompoundTagAt(filterScrollIndex + i);
+            MinerFilter filter = MinerFilter.readFromNBT(tag);
             if (filter instanceof IOreDictFilter) {
-                fontRenderer.drawString("矿辞: " + trim(((IOreDictFilter) filter).getOreDictName(), 58), guiLeft + 112, guiTop + 61 + i * 12, 0xFF3CFE9A);
+                if (tag.getBoolean("isWildcardPattern") || ((IOreDictFilter) filter).getOreDictName().contains("*")) {
+                    fontRenderer.drawString("通配: " + trim(((IOreDictFilter) filter).getOreDictName(), 58), guiLeft + 112, guiTop + 61 + i * 12, 0xFFFFFF00);
+                } else {
+                    fontRenderer.drawString("矿辞: " + trim(((IOreDictFilter) filter).getOreDictName(), 58), guiLeft + 112, guiTop + 61 + i * 12, 0xFF3CFE9A);
+                }
             } else if (filter instanceof IModIDFilter) {
                 fontRenderer.drawString("模组: " + trim(((IModIDFilter) filter).getModID(), 58), guiLeft + 112, guiTop + 61 + i * 12, 0xFF5CB8FF);
             } else if (filter instanceof IItemStackFilter) {

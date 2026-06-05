@@ -205,21 +205,21 @@ public class GuiFilterCardEdit extends GuiContainer {
         buttonList.add(new GuiDisableableButton(BTN_SAVE, guiLeft + 174, guiTop + 142, 34, 18, "保存"));
 
         // 模式切换按钮（标题下方右侧）
-        btnItem = new GuiDisableableButton(BTN_MODE_ITEM, guiLeft + 104, guiTop + 21, 32, 14, "物品");
-        btnModID = new GuiDisableableButton(BTN_MODE_MODID, guiLeft + 138, guiTop + 21, 36, 14, "模组");
-        btnPattern = new GuiDisableableButton(BTN_MODE_PATTERN, guiLeft + 176, guiTop + 21, 32, 14, "通配");
+        btnItem = new GuiDisableableButton(BTN_MODE_ITEM, guiLeft + 120, guiTop + 21, 28, 14, "物品");
+        btnModID = new GuiDisableableButton(BTN_MODE_MODID, guiLeft + 150, guiTop + 21, 28, 14, "模组");
+        btnPattern = new GuiDisableableButton(BTN_MODE_PATTERN, guiLeft + 180, guiTop + 21, 28, 14, "通配");
         buttonList.add(btnItem);
         buttonList.add(btnModID);
         buttonList.add(btnPattern);
 
         // 通配模式专属按钮
-        btnAddPattern = new GuiDisableableButton(BTN_ADD_PATTERN, guiLeft + 155, guiTop + 39, 28, 14, "添加");
-        btnPresetOre = new GuiDisableableButton(BTN_PRESET_ORE, guiLeft + 185, guiTop + 39, 22, 14, "ore*");
+        btnAddPattern = new GuiDisableableButton(BTN_ADD_PATTERN, guiLeft + 135, guiTop + 39, 28, 14, "添加");
+        btnPresetOre = new GuiDisableableButton(BTN_PRESET_ORE, guiLeft + 166, guiTop + 39, 28, 14, "ore*");
         buttonList.add(btnAddPattern);
         buttonList.add(btnPresetOre);
 
         // 通配模式文本输入框
-        patternField = new GuiTextField(0, fontRenderer, guiLeft + 18, guiTop + 41, 133, 12);
+        patternField = new GuiTextField(0, fontRenderer, guiLeft + 18, guiTop + 41, 114, 12);
         patternField.setMaxStringLength(64);
 
         updateModeUI();
@@ -310,16 +310,16 @@ public class GuiFilterCardEdit extends GuiContainer {
 
         switch (currentMode) {
             case ITEM_STACK:
-                fontRenderer.drawString("从 JEI/HEI 拖入物品", guiLeft + 18, guiTop + 24, 0xFFAAAAAA);
+                fontRenderer.drawString("从 JEI/HEI 拖入物品", guiLeft + 18, guiTop + 24, 0xFF666666);
                 drawGhostSlotBackgrounds();
                 break;
             case MOD_ID:
-                fontRenderer.drawString("从 JEI/HEI 拖入读取 ModID", guiLeft + 18, guiTop + 24, 0xFFAAAAAA);
+                fontRenderer.drawString("从 JEI/HEI 拖入读取 ModID", guiLeft + 18, guiTop + 24, 0xFF666666);
                 drawGhostSlotBackgrounds();
                 drawFilterTextList(mouseX, mouseY);
                 break;
             case ORE_PATTERN:
-                fontRenderer.drawString("输入通配符表达式", guiLeft + 18, guiTop + 24, 0xFFAAAAAA);
+                fontRenderer.drawString("输入通配符表达式", guiLeft + 18, guiTop + 24, 0xFF666666);
                 // 文本框由 drawScreen 绘制
                 drawFilterTextList(mouseX, mouseY);
                 fontRenderer.drawString("前缀*   *后缀   *包含*   *(全部)", guiLeft + 18, guiTop + 56, 0xFF777777);
