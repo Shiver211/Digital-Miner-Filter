@@ -50,7 +50,7 @@ public class GuiFilterCardEdit extends GuiContainer {
     /**
      * 幽灵槽网格相对 GUI 的 Y 坐标。
      */
-    private static final int GRID_Y = 50;
+    private static final int GRID_Y = 36;
     /**
      * 幽灵槽列数。
      */
@@ -58,7 +58,7 @@ public class GuiFilterCardEdit extends GuiContainer {
     /**
      * 可见幽灵槽行数。
      */
-    private static final int ROWS = 4;
+    private static final int ROWS = 5;
     /**
      * 同时可见的幽灵槽数量。
      */
@@ -99,12 +99,13 @@ public class GuiFilterCardEdit extends GuiContainer {
      * ModID 过滤器右上角标记颜色（蓝色）。
      */
     private static final int COLOR_MOD_MARKER = 0xFF5CB8FF;
+    private static final int COLOR_PATTERN_MARKER = 0xFFFFFF00;
 
     // ── 内容区域 Y 坐标 ────────────────────────────────
     /**
      * 深色内容区域顶部 Y 偏移。
      */
-    private static final int CONTENT_TOP = 48;
+    private static final int CONTENT_TOP = 36;
     /**
      * 深色内容区域底部 Y 偏移。
      */
@@ -203,22 +204,22 @@ public class GuiFilterCardEdit extends GuiContainer {
         buttonList.add(new GuiDisableableButton(BTN_CLEAR, guiLeft + 127, guiTop + 142, 42, 18, "清空"));
         buttonList.add(new GuiDisableableButton(BTN_SAVE, guiLeft + 174, guiTop + 142, 34, 18, "保存"));
 
-        // 模式切换按钮（标题下方）
-        btnItem = new GuiDisableableButton(BTN_MODE_ITEM, guiLeft + 18, guiTop + 21, 32, 14, "物品");
-        btnModID = new GuiDisableableButton(BTN_MODE_MODID, guiLeft + 52, guiTop + 21, 36, 14, "模组");
-        btnPattern = new GuiDisableableButton(BTN_MODE_PATTERN, guiLeft + 90, guiTop + 21, 32, 14, "通配");
+        // 模式切换按钮（标题下方右侧）
+        btnItem = new GuiDisableableButton(BTN_MODE_ITEM, guiLeft + 104, guiTop + 21, 32, 14, "物品");
+        btnModID = new GuiDisableableButton(BTN_MODE_MODID, guiLeft + 138, guiTop + 21, 36, 14, "模组");
+        btnPattern = new GuiDisableableButton(BTN_MODE_PATTERN, guiLeft + 176, guiTop + 21, 32, 14, "通配");
         buttonList.add(btnItem);
         buttonList.add(btnModID);
         buttonList.add(btnPattern);
 
         // 通配模式专属按钮
-        btnAddPattern = new GuiDisableableButton(BTN_ADD_PATTERN, guiLeft + 155, guiTop + 37, 28, 14, "添加");
-        btnPresetOre = new GuiDisableableButton(BTN_PRESET_ORE, guiLeft + 185, guiTop + 37, 22, 14, "ore*");
+        btnAddPattern = new GuiDisableableButton(BTN_ADD_PATTERN, guiLeft + 155, guiTop + 39, 28, 14, "添加");
+        btnPresetOre = new GuiDisableableButton(BTN_PRESET_ORE, guiLeft + 185, guiTop + 39, 22, 14, "ore*");
         buttonList.add(btnAddPattern);
         buttonList.add(btnPresetOre);
 
         // 通配模式文本输入框
-        patternField = new GuiTextField(0, fontRenderer, guiLeft + 18, guiTop + 39, 133, 12);
+        patternField = new GuiTextField(0, fontRenderer, guiLeft + 18, guiTop + 41, 133, 12);
         patternField.setMaxStringLength(64);
 
         updateModeUI();
@@ -240,16 +241,29 @@ public class GuiFilterCardEdit extends GuiContainer {
     }
 
     /**
-     * 物品模式显示幽灵槽；其他模式将幽灵槽移到屏幕外。
+     * 物品模式显示幽灵槽；模组模式显示第一排；通配模式移到屏幕外。
      */
     private void updateSlotVisibility() {
-        boolean showSlots = currentMode == EditMode.ITEM_STACK;
-        for (int i = 0; i < VISIBLE_SLOTS; i++) {
-            Slot slot = inventorySlots.inventorySlots.get(i);
-            if (showSlots) {
+        if (currentMode == EditMode.ITEM_STACK) {
+            for (int i = 0; i < VISIBLE_SLOTS; i++) {
+                Slot slot = inventorySlots.inventorySlots.get(i);
                 slot.xPos = GRID_X + 1 + (i % COLS) * 20;
                 slot.yPos = GRID_Y + 1 + (i / COLS) * 20;
-            } else {
+            }
+        } else if (currentMode == EditMode.MOD_ID) {
+            for (int i = 0; i < VISIBLE_SLOTS; i++) {
+                Slot slot = inventorySlots.inventorySlots.get(i);
+                if (i < 9) {
+                    slot.xPos = GRID_X + 1 + i * 20;
+                    slot.yPos = GRID_Y + 1;
+                } else {
+                    slot.xPos = -9999;
+                    slot.yPos = -9999;
+                }
+            }
+        } else {
+            for (int i = 0; i < VISIBLE_SLOTS; i++) {
+                Slot slot = inventorySlots.inventorySlots.get(i);
                 slot.xPos = -9999;
                 slot.yPos = -9999;
             }
@@ -274,7 +288,7 @@ public class GuiFilterCardEdit extends GuiContainer {
         if (currentMode == EditMode.ORE_PATTERN) {
             patternField.drawTextBox();
         }
-        if (currentMode == EditMode.ITEM_STACK) {
+        if (currentMode == EditMode.ITEM_STACK || currentMode == EditMode.MOD_ID) {
             drawFilterMarkers();
         }
         renderHoveredToolTip(mouseX, mouseY);
@@ -296,17 +310,19 @@ public class GuiFilterCardEdit extends GuiContainer {
 
         switch (currentMode) {
             case ITEM_STACK:
-                fontRenderer.drawString("从 JEI/HEI 拖入物品", guiLeft + 18, guiTop + 38, 0xFFAAAAAA);
+                fontRenderer.drawString("从 JEI/HEI 拖入物品", guiLeft + 18, guiTop + 24, 0xFFAAAAAA);
                 drawGhostSlotBackgrounds();
                 break;
             case MOD_ID:
-                fontRenderer.drawString("从 JEI/HEI 拖入物品读取 ModID", guiLeft + 18, guiTop + 38, 0xFFAAAAAA);
+                fontRenderer.drawString("从 JEI/HEI 拖入读取 ModID", guiLeft + 18, guiTop + 24, 0xFFAAAAAA);
+                drawGhostSlotBackgrounds();
                 drawFilterTextList(mouseX, mouseY);
                 break;
             case ORE_PATTERN:
+                fontRenderer.drawString("输入通配符表达式", guiLeft + 18, guiTop + 24, 0xFFAAAAAA);
                 // 文本框由 drawScreen 绘制
                 drawFilterTextList(mouseX, mouseY);
-                fontRenderer.drawString("前缀*   *后缀   *包含*   *(全部)", guiLeft + 18, guiTop + 54, 0xFF777777);
+                fontRenderer.drawString("前缀*   *后缀   *包含*   *(全部)", guiLeft + 18, guiTop + 56, 0xFF777777);
                 break;
         }
     }
@@ -353,10 +369,11 @@ public class GuiFilterCardEdit extends GuiContainer {
     }
 
     /**
-     * 绘制幽灵槽背后的深色底框（仅物品模式）。
+     * 绘制幽灵槽背后的深色底框。
      */
     private void drawGhostSlotBackgrounds() {
-        for (int i = 0; i < VISIBLE_SLOTS; i++) {
+        int slotsToDraw = (currentMode == EditMode.MOD_ID) ? 9 : VISIBLE_SLOTS;
+        for (int i = 0; i < slotsToDraw; i++) {
             int x = guiLeft + GRID_X + (i % COLS) * 20;
             int y = guiTop + GRID_Y + (i / COLS) * 20;
             drawRect(x, y, x + 18, y + 18, 0x88000000);
@@ -373,12 +390,14 @@ public class GuiFilterCardEdit extends GuiContainer {
     private void drawFilterTextList(int mouseX, int mouseY) {
         int startY = getTextListStartY();
         int visibleLines = getVisibleTextLines();
+        List<Integer> visibleIndices = getVisibleFilterIndices();
 
         for (int i = 0; i < visibleLines; i++) {
-            int index = scrollOffset + i;
-            if (index >= filters.size()) {
+            int visualIndex = scrollOffset + i;
+            if (visualIndex >= visibleIndices.size()) {
                 break;
             }
+            int realIndex = visibleIndices.get(visualIndex);
 
             int y = guiTop + startY + i * TEXT_LINE_HEIGHT;
 
@@ -387,10 +406,13 @@ public class GuiFilterCardEdit extends GuiContainer {
                 drawRect(guiLeft + 17, y, guiLeft + 197, y + TEXT_LINE_HEIGHT, 0x44FFFFFF);
             }
 
-            MinerFilter filter = MinerFilter.readFromNBT(filters.get(index));
+            MinerFilter filter = MinerFilter.readFromNBT(filters.get(realIndex));
             String text;
             int color;
-            if (filter instanceof IOreDictFilter) {
+            if (isPatternFilter(filters.get(realIndex), filter)) {
+                text = "\u901a\u914d: " + ((IOreDictFilter) filter).getOreDictName();
+                color = COLOR_PATTERN_MARKER;
+            } else if (filter instanceof IOreDictFilter) {
                 text = "\u77ff\u8f9e: " + ((IOreDictFilter) filter).getOreDictName();
                 color = COLOR_ORE_MARKER;
             } else if (filter instanceof IModIDFilter) {
@@ -410,19 +432,24 @@ public class GuiFilterCardEdit extends GuiContainer {
     }
 
     /**
-     * 在幽灵槽前方绘制过滤器类型标记（仅物品模式）。
+     * 在幽灵槽前方绘制过滤器类型标记。
      */
     private void drawFilterMarkers() {
-        int start = scrollOffset * COLS;
-        for (int i = 0; i < VISIBLE_SLOTS; i++) {
-            int index = start + i;
-            if (index >= filters.size()) {
+        List<Integer> visibleIndices = getVisibleFilterIndices();
+        int start = (currentMode == EditMode.MOD_ID) ? scrollOffset : scrollOffset * COLS;
+        int slotsToDraw = (currentMode == EditMode.MOD_ID) ? 9 : VISIBLE_SLOTS;
+        for (int i = 0; i < slotsToDraw; i++) {
+            int visualIndex = start + i;
+            if (visualIndex >= visibleIndices.size()) {
                 continue;
             }
-            MinerFilter filter = MinerFilter.readFromNBT(filters.get(index));
+            int realIndex = visibleIndices.get(visualIndex);
+            MinerFilter filter = MinerFilter.readFromNBT(filters.get(realIndex));
             int markerColor = -1;
 
-            if (filter instanceof IOreDictFilter) {
+            if (isPatternFilter(filters.get(realIndex), filter)) {
+                markerColor = COLOR_PATTERN_MARKER;
+            } else if (filter instanceof IOreDictFilter) {
                 markerColor = COLOR_ORE_MARKER;
             } else if (filter instanceof IModIDFilter) {
                 markerColor = COLOR_MOD_MARKER;
@@ -497,18 +524,27 @@ public class GuiFilterCardEdit extends GuiContainer {
             return;
         }
 
-        int removeIndex = -1;
+        int visualIndex = -1;
         if (currentMode == EditMode.ITEM_STACK) {
-            removeIndex = getSlotIndex(mouseX, mouseY);
+            visualIndex = getSlotIndex(mouseX, mouseY);
+        } else if (currentMode == EditMode.MOD_ID) {
+            visualIndex = getSlotIndex(mouseX, mouseY);
+            if (visualIndex == -1) {
+                visualIndex = getTextListIndex(mouseX, mouseY);
+            }
         } else {
-            removeIndex = getTextListIndex(mouseX, mouseY);
+            visualIndex = getTextListIndex(mouseX, mouseY);
         }
 
-        if (removeIndex >= 0 && removeIndex < filters.size()) {
-            filters.remove(removeIndex);
-            clampScroll();
-            if (currentMode == EditMode.ITEM_STACK) {
-                refreshGhostSlots();
+        if (visualIndex >= 0) {
+            List<Integer> visibleIndices = getVisibleFilterIndices();
+            if (visualIndex < visibleIndices.size()) {
+                int realIndex = visibleIndices.get(visualIndex);
+                filters.remove(realIndex);
+                clampScroll();
+                if (currentMode == EditMode.ITEM_STACK || currentMode == EditMode.MOD_ID) {
+                    refreshGhostSlots();
+                }
             }
         }
     }
@@ -566,9 +602,13 @@ public class GuiFilterCardEdit extends GuiContainer {
                 mc.displayGuiScreen(parent);
                 break;
             case BTN_CLEAR:
-                filters.clear();
+                List<Integer> visibleIndices = getVisibleFilterIndices();
+                for (int i = visibleIndices.size() - 1; i >= 0; i--) {
+                    int realIndex = visibleIndices.get(i);
+                    filters.remove(realIndex);
+                }
                 scrollOffset = 0;
-                if (currentMode == EditMode.ITEM_STACK) {
+                if (currentMode == EditMode.ITEM_STACK || currentMode == EditMode.MOD_ID) {
                     refreshGhostSlots();
                 }
                 break;
@@ -607,7 +647,7 @@ public class GuiFilterCardEdit extends GuiContainer {
         currentMode = mode;
         scrollOffset = 0;
         updateModeUI();
-        if (mode == EditMode.ITEM_STACK) {
+        if (mode == EditMode.ITEM_STACK || mode == EditMode.MOD_ID) {
             refreshGhostSlots();
         } else {
             clearGhostSlots();
@@ -630,7 +670,7 @@ public class GuiFilterCardEdit extends GuiContainer {
         if (maxScroll > 0) {
             scrollOffset += wheel < 0 ? 1 : -1;
             scrollOffset = Math.max(0, Math.min(scrollOffset, maxScroll));
-            if (currentMode == EditMode.ITEM_STACK) {
+            if (currentMode == EditMode.ITEM_STACK || currentMode == EditMode.MOD_ID) {
                 refreshGhostSlots();
             }
         }
@@ -692,6 +732,7 @@ public class GuiFilterCardEdit extends GuiContainer {
         }
         filters.add(tag);
         clampScroll();
+        refreshGhostSlots();
     }
 
     /**
@@ -719,13 +760,18 @@ public class GuiFilterCardEdit extends GuiContainer {
      * @return 已存在时返回 {@code true}。
      */
     private boolean isDuplicate(MinerFilter newFilter) {
-        for (NBTTagCompound existingTag : filters) {
-            MinerFilter existing = MinerFilter.readFromNBT(existingTag);
-            if (existing != null && existing.equals(newFilter)) {
+        for (NBTTagCompound filterTag : filters) {
+            MinerFilter existingFilter = MinerFilter.readFromNBT(filterTag);
+            if (existingFilter.equals(newFilter)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private boolean isPatternFilter(NBTTagCompound tag, MinerFilter filter) {
+        if (!(filter instanceof IOreDictFilter)) return false;
+        return tag.getBoolean("isWildcardPattern") || ((IOreDictFilter) filter).getOreDictName().contains("*");
     }
 
     // ═══════════════════════════════════════════════════
@@ -775,10 +821,18 @@ public class GuiFilterCardEdit extends GuiContainer {
     private int getSlotIndex(int mouseX, int mouseY) {
         int relX = mouseX - (guiLeft + GRID_X);
         int relY = mouseY - (guiTop + GRID_Y);
-        if (relX < 0 || relY < 0 || relX >= COLS * 20 || relY >= ROWS * 20) {
-            return -1;
+        
+        if (currentMode == EditMode.MOD_ID) {
+            if (relX < 0 || relY < 0 || relX >= COLS * 20 || relY >= 20) {
+                return -1;
+            }
+            return scrollOffset + relX / 20;
+        } else {
+            if (relX < 0 || relY < 0 || relX >= COLS * 20 || relY >= ROWS * 20) {
+                return -1;
+            }
+            return scrollOffset * COLS + (relY / 20) * COLS + relX / 20;
         }
-        return scrollOffset * COLS + (relY / 20) * COLS + relX / 20;
     }
 
     /**
@@ -811,7 +865,9 @@ public class GuiFilterCardEdit extends GuiContainer {
      * @return 起始 Y 偏移。
      */
     private int getTextListStartY() {
-        return currentMode == EditMode.ORE_PATTERN ? 66 : 52;
+        if (currentMode == EditMode.ORE_PATTERN) return 68;
+        if (currentMode == EditMode.MOD_ID) return 58;
+        return 38;
     }
 
     /**
@@ -825,15 +881,37 @@ public class GuiFilterCardEdit extends GuiContainer {
     }
 
     /**
-     * 返回当前模式下的最大滚动偏移。
+     * 计算当前模式的最大滚动偏移。
      *
-     * @return 最大滚动偏移。
+     * @return 最大滚动偏移量。
      */
     private int getMaxScroll() {
+        int visibleCount = getVisibleFilterIndices().size();
         if (currentMode == EditMode.ITEM_STACK) {
-            return Math.max(0, (filters.size() / COLS) + 1 - ROWS);
+            return Math.max(0, (visibleCount / COLS) + 1 - ROWS);
         }
-        return Math.max(0, filters.size() - getVisibleTextLines());
+        return Math.max(0, visibleCount - getVisibleTextLines());
+    }
+
+    /**
+     * 获取当前模式下应该显示的过滤器在 filters 列表中的原始索引。
+     */
+    private List<Integer> getVisibleFilterIndices() {
+        List<Integer> visible = new ArrayList<>();
+        for (int i = 0; i < filters.size(); i++) {
+            NBTTagCompound tag = filters.get(i);
+            MinerFilter filter = MinerFilter.readFromNBT(tag);
+            if (currentMode == EditMode.MOD_ID) {
+                if (filter instanceof IModIDFilter) visible.add(i);
+            } else if (currentMode == EditMode.ORE_PATTERN) {
+                if (isPatternFilter(tag, filter)) visible.add(i);
+            } else if (currentMode == EditMode.ITEM_STACK) {
+                if (!(filter instanceof IModIDFilter) && !isPatternFilter(tag, filter)) {
+                    visible.add(i);
+                }
+            }
+        }
+        return visible;
     }
 
     /**
@@ -898,10 +976,32 @@ public class GuiFilterCardEdit extends GuiContainer {
      * 根据当前滚动位置更新可见幽灵槽物品栈。
      */
     private void refreshGhostSlots() {
-        int start = scrollOffset * COLS;
-        for (int i = 0; i < VISIBLE_SLOTS; i++) {
-            int index = start + i;
-            container.setGhostStack(i, index < filters.size() ? FilterCardData.getDisplayStack(filters.get(index)) : ItemStack.EMPTY);
+        List<Integer> visibleIndices = getVisibleFilterIndices();
+        if (currentMode == EditMode.ITEM_STACK) {
+            int start = scrollOffset * COLS;
+            for (int i = 0; i < VISIBLE_SLOTS; i++) {
+                int visualIndex = start + i;
+                if (visualIndex < visibleIndices.size()) {
+                    int realIndex = visibleIndices.get(visualIndex);
+                    container.setGhostStack(i, FilterCardData.getDisplayStack(filters.get(realIndex)));
+                } else {
+                    container.setGhostStack(i, ItemStack.EMPTY);
+                }
+            }
+        } else if (currentMode == EditMode.MOD_ID) {
+            int start = scrollOffset;
+            for (int i = 0; i < 9; i++) {
+                int visualIndex = start + i;
+                if (visualIndex < visibleIndices.size()) {
+                    int realIndex = visibleIndices.get(visualIndex);
+                    container.setGhostStack(i, FilterCardData.getDisplayStack(filters.get(realIndex)));
+                } else {
+                    container.setGhostStack(i, ItemStack.EMPTY);
+                }
+            }
+            for (int i = 9; i < VISIBLE_SLOTS; i++) {
+                container.setGhostStack(i, ItemStack.EMPTY);
+            }
         }
     }
 
@@ -922,38 +1022,56 @@ public class GuiFilterCardEdit extends GuiContainer {
      */
     @Override
     protected void renderHoveredToolTip(int mouseX, int mouseY) {
-        int index = -1;
+        int visualIndex = -1;
         if (currentMode == EditMode.ITEM_STACK) {
-            index = getSlotIndex(mouseX, mouseY);
+            visualIndex = getSlotIndex(mouseX, mouseY);
+        } else if (currentMode == EditMode.MOD_ID) {
+            visualIndex = getSlotIndex(mouseX, mouseY);
+            if (visualIndex == -1) {
+                visualIndex = getTextListIndex(mouseX, mouseY);
+            }
         } else {
-            index = getTextListIndex(mouseX, mouseY);
+            visualIndex = getTextListIndex(mouseX, mouseY);
         }
 
-        if (index >= 0 && index < filters.size()) {
-            MinerFilter filter = MinerFilter.readFromNBT(filters.get(index));
-            if (filter instanceof IOreDictFilter) {
-                List<String> tooltip = new ArrayList<>();
-                tooltip.add("\u00a7a\u77ff\u8f9e: " + ((IOreDictFilter) filter).getOreDictName());
-                ItemStack stack = FilterCardData.getDisplayStack(filters.get(index));
-                if (!stack.isEmpty()) {
-                    tooltip.add(stack.getDisplayName());
+        if (visualIndex >= 0) {
+            List<Integer> visibleIndices = getVisibleFilterIndices();
+            if (visualIndex < visibleIndices.size()) {
+                int realIndex = visibleIndices.get(visualIndex);
+                MinerFilter filter = MinerFilter.readFromNBT(filters.get(realIndex));
+                if (isPatternFilter(filters.get(realIndex), filter)) {
+                    List<String> tooltip = new ArrayList<>();
+                    tooltip.add("\u00a7e\u901a\u914d: " + ((IOreDictFilter) filter).getOreDictName());
+                    ItemStack stack = FilterCardData.getDisplayStack(filters.get(realIndex));
+                    if (!stack.isEmpty()) {
+                        tooltip.add(stack.getDisplayName());
+                    }
+                    drawHoveringText(tooltip, mouseX, mouseY);
+                    return;
+                } else if (filter instanceof IOreDictFilter) {
+                    List<String> tooltip = new ArrayList<>();
+                    tooltip.add("\u00a7a\u77ff\u8f9e: " + ((IOreDictFilter) filter).getOreDictName());
+                    ItemStack stack = FilterCardData.getDisplayStack(filters.get(realIndex));
+                    if (!stack.isEmpty()) {
+                        tooltip.add(stack.getDisplayName());
+                    }
+                    drawHoveringText(tooltip, mouseX, mouseY);
+                    return;
                 }
-                drawHoveringText(tooltip, mouseX, mouseY);
-                return;
-            }
-            if (filter instanceof IModIDFilter) {
-                List<String> tooltip = new ArrayList<>();
-                tooltip.add("\u00a79ModID: " + ((IModIDFilter) filter).getModID());
-                ItemStack stack = FilterCardData.getDisplayStack(filters.get(index));
-                if (!stack.isEmpty()) {
-                    tooltip.add(stack.getDisplayName());
+                if (filter instanceof IModIDFilter) {
+                    List<String> tooltip = new ArrayList<>();
+                    tooltip.add("\u00a79ModID: " + ((IModIDFilter) filter).getModID());
+                    ItemStack stack = FilterCardData.getDisplayStack(filters.get(realIndex));
+                    if (!stack.isEmpty()) {
+                        tooltip.add(stack.getDisplayName());
+                    }
+                    drawHoveringText(tooltip, mouseX, mouseY);
+                    return;
                 }
-                drawHoveringText(tooltip, mouseX, mouseY);
-                return;
             }
         }
 
-        if (currentMode == EditMode.ITEM_STACK) {
+        if (currentMode == EditMode.ITEM_STACK || currentMode == EditMode.MOD_ID) {
             super.renderHoveredToolTip(mouseX, mouseY);
         }
     }

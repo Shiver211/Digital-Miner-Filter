@@ -316,6 +316,8 @@ public final class FilterCardData {
      */
     public static NBTTagCompound createOreDictPatternFilterTag(String pattern) {
         MinerFilter filter = createOreDictPatternFilter(pattern);
-        return filter.write(new NBTTagCompound());
+        NBTTagCompound tag = filter.write(new NBTTagCompound());
+        tag.setBoolean("isWildcardPattern", true);
+        return tag;
     }
 }
