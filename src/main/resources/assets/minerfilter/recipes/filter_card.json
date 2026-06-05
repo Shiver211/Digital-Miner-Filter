@@ -1,0 +1,22 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    " F ",
+    "PCP",
+    " F "
+  ],
+  "key": {
+    "F": {
+      "item": "mekanism:filterupgrade"
+    },
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "C": {
+      "item": "mekanism:configurationcard"
+    }
+  },
+  "result": {
+    "item": "minerfilter:filter_card"
+  }
+}
