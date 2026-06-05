@@ -202,8 +202,8 @@ public class GuiFilterCardEdit extends GuiContainer {
         buttonList.add(btnPattern);
 
         // 通配模式专属按钮
-        btnAddPattern = new GuiDisableableButton(BTN_ADD_PATTERN, guiLeft + 135, guiTop + 39, 28, 14, tr("gui.minerfilter.button.add"));
-        btnPresetOre = new GuiDisableableButton(BTN_PRESET_ORE, guiLeft + 166, guiTop + 39, 28, 14, tr("gui.minerfilter.button.preset_ore"));
+        btnAddPattern = new GuiDisableableButton(BTN_ADD_PATTERN, guiLeft + 135, guiTop + 40, 28, 14, tr("gui.minerfilter.button.add"));
+        btnPresetOre = new GuiDisableableButton(BTN_PRESET_ORE, guiLeft + 166, guiTop + 40, 28, 14, tr("gui.minerfilter.button.preset_ore"));
         buttonList.add(btnAddPattern);
         buttonList.add(btnPresetOre);
 
@@ -772,7 +772,7 @@ public class GuiFilterCardEdit extends GuiContainer {
      * @return 屏幕坐标中的拖拽目标矩形。
      */
     public java.awt.Rectangle getDropArea() {
-        if (currentMode == EditMode.ORE_PATTERN) return null;
+        if (currentMode == EditMode.ORE_PATTERN) return new java.awt.Rectangle(0, 0, 0, 0);
         if (currentMode == EditMode.MOD_ID) {
             return new java.awt.Rectangle(guiLeft + 16, guiTop + CONTENT_TOP, 182, 20);
         }

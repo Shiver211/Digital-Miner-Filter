@@ -45,6 +45,9 @@ public class FilterCardJEIPlugin implements IModPlugin {
             if (!(ingredient instanceof ItemStack)) {
                 return Collections.emptyList();
             }
+            if (gui.getCurrentMode() == com.shiver.minerfilter.client.gui.EditMode.ORE_PATTERN) {
+                return Collections.emptyList();
+            }
             return Collections.singletonList(new Target<I>() {
                 /**
                  * 获取接收该拖拽配料的屏幕区域。
