@@ -41,9 +41,9 @@ public final class FilterCardData {
      */
     public static final String TAG_GHOST_STACK = "ghostStack";
     /**
-     * 空卡创建第一个配置组时使用的默认名称。
+     * 空卡创建第一个配置组时使用的默认名称语言键。
      */
-    public static final String DEFAULT_GROUP_NAME = "默认";
+    public static final String DEFAULT_GROUP_NAME = "gui.minerfilter.group.default";
 
     /**
      * 工具类不允许实例化。

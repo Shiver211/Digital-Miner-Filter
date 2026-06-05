@@ -18,7 +18,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -71,9 +72,9 @@ public class ItemFilterCard extends Item {
             NBTTagList filters = getSelectedFilters(stack);
             if (filters != null) {
                 applyFilters(filters, miner);
-                send(player, "已应用过滤卡，覆盖 " + miner.filters.size() + " 条过滤器。");
+                send(player, "message.minerfilter.applied", miner.filters.size());
             } else {
-                send(player, "没有可用配置组。");
+                send(player, "message.minerfilter.no_group");
             }
         }
 
@@ -133,7 +134,7 @@ public class ItemFilterCard extends Item {
         if (player.isSneaking()) {
             if (!world.isRemote) {
                 stack.setTagCompound(null);
-                send(player, "过滤卡已清空。");
+                send(player, "message.minerfilter.cleared");
             }
             return new ActionResult<>(EnumActionResult.SUCCESS, stack);
         }
@@ -160,13 +161,13 @@ public class ItemFilterCard extends Item {
         if (stack.hasTagCompound() && stack.getTagCompound().hasKey(FilterCardData.TAG_GROUPS, 9)) {
             NBTTagCompound root = stack.getTagCompound();
             NBTTagList groups = FilterCardData.getGroups(root);
-            tooltip.add("配置组: " + groups.tagCount());
+            tooltip.add(I18n.translateToLocalFormatted("tooltip.minerfilter.groups", groups.tagCount()));
             NBTTagCompound selected = FilterCardData.getSelectedGroupTag(root);
             if (selected != null) {
-                tooltip.add("当前: " + selected.getString(FilterCardData.TAG_NAME));
+                tooltip.add(I18n.translateToLocalFormatted("tooltip.minerfilter.current", localizeName(selected.getString(FilterCardData.TAG_NAME))));
             }
         } else {
-            tooltip.add("未创建配置组");
+            tooltip.add(I18n.translateToLocal("tooltip.minerfilter.no_group"));
         }
     }
 
@@ -214,9 +215,20 @@ public class ItemFilterCard extends Item {
      * 向玩家发送普通聊天状态消息。
      *
      * @param player 消息接收者。
-     * @param message 消息文本。
+     * @param key 消息语言键。
+     * @param args 消息参数。
      */
-    private static void send(EntityPlayer player, String message) {
-        player.sendMessage(new TextComponentString(message));
+    private static void send(EntityPlayer player, String key, Object... args) {
+        player.sendMessage(new TextComponentTranslation(key, args));
+    }
+
+    /**
+     * 语言键使用本地化文本；玩家自定义名称保持原文。
+     *
+     * @param name 配置组名称或语言键。
+     * @return 可展示的配置组名称。
+     */
+    private static String localizeName(String name) {
+        return I18n.canTranslate(name) ? I18n.translateToLocal(name) : name;
     }
 }

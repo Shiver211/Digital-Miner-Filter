@@ -12,6 +12,7 @@ import mekanism.common.util.MekanismUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -111,11 +112,11 @@ public class GuiFilterCardMain extends GuiContainer {
         guiLeft = (width - WIDTH) / 2;
         guiTop = (height - HEIGHT) / 2;
         buttonList.clear();
-        buttonList.add(new GuiDisableableButton(1, guiLeft + 164, guiTop + 142, 52, 18, "重命名"));
-        buttonList.add(new GuiDisableableButton(0, guiLeft + 108, guiTop + 142, 42, 18, "添加"));
-        buttonList.add(new GuiDisableableButton(3, guiLeft + 11, guiTop + 142, 26, 18, "编辑"));
-        buttonList.add(new GuiDisableableButton(4, guiLeft + 39, guiTop + 142, 26, 18, "复制"));
-        buttonList.add(new GuiDisableableButton(5, guiLeft + 67, guiTop + 142, 26, 18, "删除"));
+        buttonList.add(new GuiDisableableButton(1, guiLeft + 164, guiTop + 142, 52, 18, tr("gui.minerfilter.button.rename")));
+        buttonList.add(new GuiDisableableButton(0, guiLeft + 108, guiTop + 142, 42, 18, tr("gui.minerfilter.button.add")));
+        buttonList.add(new GuiDisableableButton(3, guiLeft + 11, guiTop + 142, 26, 18, tr("gui.minerfilter.button.edit")));
+        buttonList.add(new GuiDisableableButton(4, guiLeft + 39, guiTop + 142, 26, 18, tr("gui.minerfilter.button.copy")));
+        buttonList.add(new GuiDisableableButton(5, guiLeft + 67, guiTop + 142, 26, 18, tr("gui.minerfilter.button.delete")));
 
         nameField = new GuiTextField(0, fontRenderer, guiLeft + 109, guiTop + 127, 106, 12);
         nameField.setMaxStringLength(24);
@@ -146,9 +147,9 @@ public class GuiFilterCardMain extends GuiContainer {
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         drawPanel();
-        drawCenteredString(fontRenderer, "数字采矿机过滤卡", guiLeft + WIDTH / 2, guiTop + 8, 0x404040);
-        fontRenderer.drawString("配置组", guiLeft + 12, guiTop + 18, 0xFF3CFE9A);
-        fontRenderer.drawString("保存的过滤器", guiLeft + 108, guiTop + 18, 0xFF3CFE9A);
+        drawCenteredString(fontRenderer, tr("gui.minerfilter.main.title"), guiLeft + WIDTH / 2, guiTop + 8, 0x404040);
+        fontRenderer.drawString(tr("gui.minerfilter.main.groups"), guiLeft + 12, guiTop + 18, 0xFF3CFE9A);
+        fontRenderer.drawString(tr("gui.minerfilter.main.saved_filters"), guiLeft + 108, guiTop + 18, 0xFF3CFE9A);
 
         drawGroups(mouseX, mouseY);
         drawSelectedGroupInfo();
@@ -194,7 +195,7 @@ public class GuiFilterCardMain extends GuiContainer {
             if (index == selected) {
                 drawRect(x, y, x + 2, y + GROUP_H - 2, 0xFF3CFE9A);
             }
-            String name = groups.getCompoundTagAt(index).getString(FilterCardData.TAG_NAME);
+            String name = groupName(groups.getCompoundTagAt(index).getString(FilterCardData.TAG_NAME));
             fontRenderer.drawString(trim(name, 48), x + 6, y + 4, index == selected ? 0xFFFFFF : 0xDDDDDD);
         }
 
@@ -210,7 +211,7 @@ public class GuiFilterCardMain extends GuiContainer {
     private void drawSelectedGroupInfo() {
         NBTTagCompound group = FilterCardData.getSelectedGroupTag(data);
         if (group == null) {
-            fontRenderer.drawString("没有配置组", guiLeft + 112, guiTop + 36, 0xFFFFFF);
+            fontRenderer.drawString(tr("gui.minerfilter.main.no_group"), guiLeft + 112, guiTop + 36, 0xFFFFFF);
             return;
         }
 
@@ -218,8 +219,8 @@ public class GuiFilterCardMain extends GuiContainer {
         int maxRows = Math.max(0, filters.tagCount() - VISIBLE_FILTERS);
         filterScrollIndex = Math.max(0, Math.min(filterScrollIndex, maxRows));
 
-        fontRenderer.drawString("名称: " + trim(group.getString(FilterCardData.TAG_NAME), 70), guiLeft + 112, guiTop + 33, 0xFFFFFF);
-        fontRenderer.drawString("数量: " + filters.tagCount(), guiLeft + 112, guiTop + 45, 0xFFFFFF);
+        fontRenderer.drawString(tr("gui.minerfilter.main.name", trim(groupName(group.getString(FilterCardData.TAG_NAME)), 70)), guiLeft + 112, guiTop + 33, 0xFFFFFF);
+        fontRenderer.drawString(tr("gui.minerfilter.main.count", filters.tagCount()), guiLeft + 112, guiTop + 45, 0xFFFFFF);
         
         int rendered = Math.min(filters.tagCount() - filterScrollIndex, VISIBLE_FILTERS);
         for (int i = 0; i < rendered; i++) {
@@ -227,17 +228,17 @@ public class GuiFilterCardMain extends GuiContainer {
             MinerFilter filter = MinerFilter.readFromNBT(tag);
             if (filter instanceof IOreDictFilter) {
                 if (tag.getBoolean("isWildcardPattern") || ((IOreDictFilter) filter).getOreDictName().contains("*")) {
-                    fontRenderer.drawString("通配: " + trim(((IOreDictFilter) filter).getOreDictName(), 58), guiLeft + 112, guiTop + 61 + i * 12, 0xFFFFFF00);
+                    fontRenderer.drawString(tr("gui.minerfilter.filter.pattern", trim(((IOreDictFilter) filter).getOreDictName(), 58)), guiLeft + 112, guiTop + 61 + i * 12, 0xFFFFFF00);
                 } else {
-                    fontRenderer.drawString("矿辞: " + trim(((IOreDictFilter) filter).getOreDictName(), 58), guiLeft + 112, guiTop + 61 + i * 12, 0xFF3CFE9A);
+                    fontRenderer.drawString(tr("gui.minerfilter.filter.ore", trim(((IOreDictFilter) filter).getOreDictName(), 58)), guiLeft + 112, guiTop + 61 + i * 12, 0xFF3CFE9A);
                 }
             } else if (filter instanceof IModIDFilter) {
-                fontRenderer.drawString("模组: " + trim(((IModIDFilter) filter).getModID(), 58), guiLeft + 112, guiTop + 61 + i * 12, 0xFF5CB8FF);
+                fontRenderer.drawString(tr("gui.minerfilter.filter.mod", trim(((IModIDFilter) filter).getModID(), 58)), guiLeft + 112, guiTop + 61 + i * 12, 0xFF5CB8FF);
             } else if (filter instanceof IItemStackFilter) {
                 ItemStack filterStack = ((IItemStackFilter) filter).getItemStack();
-                fontRenderer.drawString("物品: " + trim(filterStack.getDisplayName(), 58), guiLeft + 112, guiTop + 61 + i * 12, 0xFF3CFE9A);
+                fontRenderer.drawString(tr("gui.minerfilter.filter.item", trim(filterStack.getDisplayName(), 58)), guiLeft + 112, guiTop + 61 + i * 12, 0xFF3CFE9A);
             } else if (filter != null) {
-                fontRenderer.drawString("过滤器: " + filter.getClass().getSimpleName(), guiLeft + 112, guiTop + 61 + i * 12, 0xFF3CFE9A);
+                fontRenderer.drawString(tr("gui.minerfilter.filter.generic", filter.getClass().getSimpleName()), guiLeft + 112, guiTop + 61 + i * 12, 0xFF3CFE9A);
             }
         }
 
@@ -363,7 +364,7 @@ public class GuiFilterCardMain extends GuiContainer {
      */
     private void addGroup() {
         NBTTagList groups = FilterCardData.getGroups(data);
-        groups.appendTag(FilterCardData.createGroup("配置组 " + (groups.tagCount() + 1)));
+        groups.appendTag(FilterCardData.createGroup(tr("gui.minerfilter.group.numbered", groups.tagCount() + 1)));
         data.setInteger(FilterCardData.TAG_SELECTED_GROUP, groups.tagCount() - 1);
         filterScrollIndex = 0;
         updateNameField();
@@ -396,7 +397,7 @@ public class GuiFilterCardMain extends GuiContainer {
     private void copyGroup(int index) {
         NBTTagList groups = FilterCardData.getGroups(data);
         NBTTagCompound copy = groups.getCompoundTagAt(index).copy();
-        copy.setString(FilterCardData.TAG_NAME, copy.getString(FilterCardData.TAG_NAME) + " 副本");
+        copy.setString(FilterCardData.TAG_NAME, tr("gui.minerfilter.group.copy", groupName(copy.getString(FilterCardData.TAG_NAME))));
         groups.appendTag(copy);
         data.setInteger(FilterCardData.TAG_SELECTED_GROUP, groups.tagCount() - 1);
         updateNameField();
@@ -422,7 +423,7 @@ public class GuiFilterCardMain extends GuiContainer {
             return;
         }
         NBTTagCompound group = FilterCardData.getSelectedGroupTag(data);
-        nameField.setText(group == null ? "" : group.getString(FilterCardData.TAG_NAME));
+        nameField.setText(group == null ? "" : groupName(group.getString(FilterCardData.TAG_NAME)));
     }
 
     /**
@@ -449,5 +450,26 @@ public class GuiFilterCardMain extends GuiContainer {
             text = text.substring(0, text.length() - 1);
         }
         return text + "...";
+    }
+
+    /**
+     * 读取客户端语言文件。
+     *
+     * @param key 语言键。
+     * @param args 参数。
+     * @return 本地化文本。
+     */
+    private static String tr(String key, Object... args) {
+        return I18n.format(key, args);
+    }
+
+    /**
+     * 默认名称使用语言文件，玩家自定义名称保持原文。
+     *
+     * @param name 配置组名称或语言键。
+     * @return 可展示的配置组名称。
+     */
+    private static String groupName(String name) {
+        return I18n.hasKey(name) ? I18n.format(name) : name;
     }
 }

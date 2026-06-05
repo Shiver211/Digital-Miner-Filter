@@ -10,6 +10,7 @@ import mekanism.common.util.MekanismUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -42,7 +43,6 @@ public class GuiFilterCardEdit extends GuiContainer {
      */
     private static final int HEIGHT = 168;
 
-    // ── 物品模式幽灵槽布局 ────────────────────────────────
     /**
      * 幽灵槽网格相对 GUI 的 X 坐标。
      */
@@ -64,13 +64,11 @@ public class GuiFilterCardEdit extends GuiContainer {
      */
     private static final int VISIBLE_SLOTS = COLS * ROWS;
 
-    // ── 文字列表布局 ────────────────────────────────────
     /**
      * 文字列表每行高度。
      */
     private static final int TEXT_LINE_HEIGHT = 14;
 
-    // ── 纹理 ────────────────────────────────────────────
     /**
      * 为保持视觉一致性而复用的 Mekanism 基础 GUI 纹理。
      */
@@ -79,8 +77,6 @@ public class GuiFilterCardEdit extends GuiContainer {
      * Mekanism 滚动条滑块纹理。
      */
     private static final ResourceLocation SCROLL = MekanismUtils.getResource(MekanismUtils.ResourceType.GUI, "Scroll_Icon.png");
-
-    // ── 按钮 ID ────────────────────────────────────────
     private static final int BTN_BACK = 0;
     private static final int BTN_CLEAR = 1;
     private static final int BTN_SAVE = 2;
@@ -90,7 +86,6 @@ public class GuiFilterCardEdit extends GuiContainer {
     private static final int BTN_ADD_PATTERN = 13;
     private static final int BTN_PRESET_ORE = 14;
 
-    // ── 标记颜色 ──────────────────────────────────────
     /**
      * 矿辞过滤器右上角标记颜色（绿色）。
      */
@@ -101,7 +96,6 @@ public class GuiFilterCardEdit extends GuiContainer {
     private static final int COLOR_MOD_MARKER = 0xFF5CB8FF;
     private static final int COLOR_PATTERN_MARKER = 0xFFFFFF00;
 
-    // ── 内容区域 Y 坐标 ────────────────────────────────
     /**
      * 深色内容区域顶部 Y 偏移。
      */
@@ -145,7 +139,6 @@ public class GuiFilterCardEdit extends GuiContainer {
      */
     private int scrollOffset;
 
-    // ── 按钮引用 ──────────────────────────────────────
     private GuiDisableableButton btnItem;
     private GuiDisableableButton btnModID;
     private GuiDisableableButton btnPattern;
@@ -183,10 +176,6 @@ public class GuiFilterCardEdit extends GuiContainer {
         refreshGhostSlots();
     }
 
-    // ═══════════════════════════════════════════════════
-    //  初始化
-    // ═══════════════════════════════════════════════════
-
     /**
      * 在 Minecraft 完成界面尺寸计算后初始化编辑器按钮和文本框。
      */
@@ -200,21 +189,21 @@ public class GuiFilterCardEdit extends GuiContainer {
         buttonList.clear();
 
         // 底部操作按钮
-        buttonList.add(new GuiDisableableButton(BTN_BACK, guiLeft + 18, guiTop + 142, 42, 18, "返回"));
-        buttonList.add(new GuiDisableableButton(BTN_CLEAR, guiLeft + 127, guiTop + 142, 42, 18, "清空"));
-        buttonList.add(new GuiDisableableButton(BTN_SAVE, guiLeft + 174, guiTop + 142, 34, 18, "保存"));
+        buttonList.add(new GuiDisableableButton(BTN_BACK, guiLeft + 18, guiTop + 142, 42, 18, tr("gui.minerfilter.button.back")));
+        buttonList.add(new GuiDisableableButton(BTN_CLEAR, guiLeft + 127, guiTop + 142, 42, 18, tr("gui.minerfilter.button.clear")));
+        buttonList.add(new GuiDisableableButton(BTN_SAVE, guiLeft + 174, guiTop + 142, 34, 18, tr("gui.minerfilter.button.save")));
 
         // 模式切换按钮（标题下方右侧）
-        btnItem = new GuiDisableableButton(BTN_MODE_ITEM, guiLeft + 120, guiTop + 21, 28, 14, "物品");
-        btnModID = new GuiDisableableButton(BTN_MODE_MODID, guiLeft + 150, guiTop + 21, 28, 14, "模组");
-        btnPattern = new GuiDisableableButton(BTN_MODE_PATTERN, guiLeft + 180, guiTop + 21, 28, 14, "通配");
+        btnItem = new GuiDisableableButton(BTN_MODE_ITEM, guiLeft + 120, guiTop + 21, 28, 14, tr("gui.minerfilter.mode.item"));
+        btnModID = new GuiDisableableButton(BTN_MODE_MODID, guiLeft + 150, guiTop + 21, 28, 14, tr("gui.minerfilter.mode.mod"));
+        btnPattern = new GuiDisableableButton(BTN_MODE_PATTERN, guiLeft + 180, guiTop + 21, 28, 14, tr("gui.minerfilter.mode.pattern"));
         buttonList.add(btnItem);
         buttonList.add(btnModID);
         buttonList.add(btnPattern);
 
         // 通配模式专属按钮
-        btnAddPattern = new GuiDisableableButton(BTN_ADD_PATTERN, guiLeft + 135, guiTop + 39, 28, 14, "添加");
-        btnPresetOre = new GuiDisableableButton(BTN_PRESET_ORE, guiLeft + 166, guiTop + 39, 28, 14, "ore*");
+        btnAddPattern = new GuiDisableableButton(BTN_ADD_PATTERN, guiLeft + 135, guiTop + 39, 28, 14, tr("gui.minerfilter.button.add"));
+        btnPresetOre = new GuiDisableableButton(BTN_PRESET_ORE, guiLeft + 166, guiTop + 39, 28, 14, tr("gui.minerfilter.button.preset_ore"));
         buttonList.add(btnAddPattern);
         buttonList.add(btnPresetOre);
 
@@ -270,10 +259,6 @@ public class GuiFilterCardEdit extends GuiContainer {
         }
     }
 
-    // ═══════════════════════════════════════════════════
-    //  绘制
-    // ═══════════════════════════════════════════════════
-
     /**
      * 绘制编辑界面全部内容。
      *
@@ -306,23 +291,23 @@ public class GuiFilterCardEdit extends GuiContainer {
         drawBasePanel();
         drawContentBackground();
         drawScrollBar();
-        drawCenteredString(fontRenderer, "编辑配置组", guiLeft + WIDTH / 2, guiTop + 7, 0x404040);
+        drawCenteredString(fontRenderer, tr("gui.minerfilter.edit.title"), guiLeft + WIDTH / 2, guiTop + 7, 0x404040);
 
         switch (currentMode) {
             case ITEM_STACK:
-                fontRenderer.drawString("从 JEI/HEI 拖入物品", guiLeft + 18, guiTop + 24, 0xFF666666);
+                fontRenderer.drawString(tr("gui.minerfilter.edit.help.item"), guiLeft + 18, guiTop + 24, 0xFF666666);
                 drawGhostSlotBackgrounds();
                 break;
             case MOD_ID:
-                fontRenderer.drawString("从 JEI/HEI 拖入读取 ModID", guiLeft + 18, guiTop + 24, 0xFF666666);
+                fontRenderer.drawString(tr("gui.minerfilter.edit.help.mod"), guiLeft + 18, guiTop + 24, 0xFF666666);
                 drawGhostSlotBackgrounds();
                 drawFilterTextList(mouseX, mouseY);
                 break;
             case ORE_PATTERN:
-                fontRenderer.drawString("输入通配符表达式", guiLeft + 18, guiTop + 24, 0xFF666666);
+                fontRenderer.drawString(tr("gui.minerfilter.edit.help.pattern"), guiLeft + 18, guiTop + 24, 0xFF666666);
                 // 文本框由 drawScreen 绘制
                 drawFilterTextList(mouseX, mouseY);
-                fontRenderer.drawString("前缀*   *后缀   *包含*   *(全部)", guiLeft + 18, guiTop + 56, 0xFF777777);
+                fontRenderer.drawString(tr("gui.minerfilter.edit.pattern_examples"), guiLeft + 18, guiTop + 56, 0xFF777777);
                 break;
         }
     }
@@ -410,19 +395,19 @@ public class GuiFilterCardEdit extends GuiContainer {
             String text;
             int color;
             if (isPatternFilter(filters.get(realIndex), filter)) {
-                text = "\u901a\u914d: " + ((IOreDictFilter) filter).getOreDictName();
+                text = tr("gui.minerfilter.filter.pattern", ((IOreDictFilter) filter).getOreDictName());
                 color = COLOR_PATTERN_MARKER;
             } else if (filter instanceof IOreDictFilter) {
-                text = "\u77ff\u8f9e: " + ((IOreDictFilter) filter).getOreDictName();
+                text = tr("gui.minerfilter.filter.ore", ((IOreDictFilter) filter).getOreDictName());
                 color = COLOR_ORE_MARKER;
             } else if (filter instanceof IModIDFilter) {
-                text = "\u6a21\u7ec4: " + ((IModIDFilter) filter).getModID();
+                text = tr("gui.minerfilter.filter.mod", ((IModIDFilter) filter).getModID());
                 color = COLOR_MOD_MARKER;
             } else if (filter instanceof IItemStackFilter) {
-                text = "\u7269\u54c1: " + ((IItemStackFilter) filter).getItemStack().getDisplayName();
+                text = tr("gui.minerfilter.filter.item", ((IItemStackFilter) filter).getItemStack().getDisplayName());
                 color = 0xFFFFFFFF;
             } else {
-                text = "\u8fc7\u6ee4\u5668";
+                text = tr("gui.minerfilter.filter.unknown");
                 color = 0xFFAAAAAA;
             }
 
@@ -501,10 +486,6 @@ public class GuiFilterCardEdit extends GuiContainer {
         net.minecraft.client.renderer.GlStateManager.enableAlpha();
         net.minecraft.client.renderer.GlStateManager.enableTexture2D();
     }
-
-    // ═══════════════════════════════════════════════════
-    //  交互
-    // ═══════════════════════════════════════════════════
 
     /**
      * 处理鼠标点击：文本框聚焦和过滤器移除。
@@ -676,10 +657,6 @@ public class GuiFilterCardEdit extends GuiContainer {
         }
     }
 
-    // ═══════════════════════════════════════════════════
-    //  过滤器操作
-    // ═══════════════════════════════════════════════════
-
     /**
      * 将 JEI/HEI 幽灵物品栈添加到正在编辑的过滤器列表。
      *
@@ -774,10 +751,6 @@ public class GuiFilterCardEdit extends GuiContainer {
         return tag.getBoolean("isWildcardPattern") || ((IOreDictFilter) filter).getOreDictName().contains("*");
     }
 
-    // ═══════════════════════════════════════════════════
-    //  JEI 拖拽支持
-    // ═══════════════════════════════════════════════════
-
     /**
      * 检查屏幕坐标是否位于 JEI/HEI 拖拽区域内。
      *
@@ -786,6 +759,10 @@ public class GuiFilterCardEdit extends GuiContainer {
      * @return 点位于拖拽区域内时返回 {@code true}。
      */
     public boolean isInDropArea(int x, int y) {
+        if (currentMode == EditMode.ORE_PATTERN) return false;
+        if (currentMode == EditMode.MOD_ID) {
+            return x >= guiLeft + 16 && x < guiLeft + 198 && y >= guiTop + CONTENT_TOP && y < guiTop + CONTENT_TOP + 20;
+        }
         return x >= guiLeft + 16 && x < guiLeft + 198 && y >= guiTop + CONTENT_TOP && y < guiTop + CONTENT_BOTTOM;
     }
 
@@ -795,6 +772,10 @@ public class GuiFilterCardEdit extends GuiContainer {
      * @return 屏幕坐标中的拖拽目标矩形。
      */
     public java.awt.Rectangle getDropArea() {
+        if (currentMode == EditMode.ORE_PATTERN) return null;
+        if (currentMode == EditMode.MOD_ID) {
+            return new java.awt.Rectangle(guiLeft + 16, guiTop + CONTENT_TOP, 182, 20);
+        }
         return new java.awt.Rectangle(guiLeft + 16, guiTop + CONTENT_TOP, 182, CONTENT_BOTTOM - CONTENT_TOP);
     }
 
@@ -806,10 +787,6 @@ public class GuiFilterCardEdit extends GuiContainer {
     public EditMode getCurrentMode() {
         return currentMode;
     }
-
-    // ═══════════════════════════════════════════════════
-    //  坐标映射
-    // ═══════════════════════════════════════════════════
 
     /**
      * 将屏幕坐标映射到幽灵槽网格中的过滤器索引（物品模式）。
@@ -855,10 +832,6 @@ public class GuiFilterCardEdit extends GuiContainer {
         return scrollOffset + line;
     }
 
-    // ═══════════════════════════════════════════════════
-    //  布局工具
-    // ═══════════════════════════════════════════════════
-
     /**
      * 返回当前模式下文字列表的起始 Y 偏移（相对 GUI 顶部）。
      *
@@ -895,6 +868,8 @@ public class GuiFilterCardEdit extends GuiContainer {
 
     /**
      * 获取当前模式下应该显示的过滤器在 filters 列表中的原始索引。
+     *
+     * @return 当前模式可见过滤器在完整列表中的索引列表。
      */
     private List<Integer> getVisibleFilterIndices() {
         List<Integer> visible = new ArrayList<>();
@@ -937,10 +912,6 @@ public class GuiFilterCardEdit extends GuiContainer {
         }
         return text + "...";
     }
-
-    // ═══════════════════════════════════════════════════
-    //  数据操作
-    // ═══════════════════════════════════════════════════
 
     /**
      * 将编辑后的过滤器写回选中配置组，并同步父级 GUI。
@@ -1041,7 +1012,7 @@ public class GuiFilterCardEdit extends GuiContainer {
                 MinerFilter filter = MinerFilter.readFromNBT(filters.get(realIndex));
                 if (isPatternFilter(filters.get(realIndex), filter)) {
                     List<String> tooltip = new ArrayList<>();
-                    tooltip.add("\u00a7e\u901a\u914d: " + ((IOreDictFilter) filter).getOreDictName());
+                    tooltip.add("\u00a7e" + tr("gui.minerfilter.filter.pattern", ((IOreDictFilter) filter).getOreDictName()));
                     ItemStack stack = FilterCardData.getDisplayStack(filters.get(realIndex));
                     if (!stack.isEmpty()) {
                         tooltip.add(stack.getDisplayName());
@@ -1050,7 +1021,7 @@ public class GuiFilterCardEdit extends GuiContainer {
                     return;
                 } else if (filter instanceof IOreDictFilter) {
                     List<String> tooltip = new ArrayList<>();
-                    tooltip.add("\u00a7a\u77ff\u8f9e: " + ((IOreDictFilter) filter).getOreDictName());
+                    tooltip.add("\u00a7a" + tr("gui.minerfilter.filter.ore", ((IOreDictFilter) filter).getOreDictName()));
                     ItemStack stack = FilterCardData.getDisplayStack(filters.get(realIndex));
                     if (!stack.isEmpty()) {
                         tooltip.add(stack.getDisplayName());
@@ -1060,7 +1031,7 @@ public class GuiFilterCardEdit extends GuiContainer {
                 }
                 if (filter instanceof IModIDFilter) {
                     List<String> tooltip = new ArrayList<>();
-                    tooltip.add("\u00a79ModID: " + ((IModIDFilter) filter).getModID());
+                    tooltip.add("\u00a79" + tr("gui.minerfilter.filter.mod_id", ((IModIDFilter) filter).getModID()));
                     ItemStack stack = FilterCardData.getDisplayStack(filters.get(realIndex));
                     if (!stack.isEmpty()) {
                         tooltip.add(stack.getDisplayName());
@@ -1074,5 +1045,16 @@ public class GuiFilterCardEdit extends GuiContainer {
         if (currentMode == EditMode.ITEM_STACK || currentMode == EditMode.MOD_ID) {
             super.renderHoveredToolTip(mouseX, mouseY);
         }
+    }
+
+    /**
+     * 读取客户端语言文件。
+     *
+     * @param key 语言键。
+     * @param args 参数。
+     * @return 本地化文本。
+     */
+    private static String tr(String key, Object... args) {
+        return I18n.format(key, args);
     }
 }
