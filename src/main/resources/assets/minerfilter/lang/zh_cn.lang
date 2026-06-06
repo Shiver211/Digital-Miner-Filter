@@ -1,4 +1,5 @@
-item.minerfilter.filter_card.name=数字采矿机过滤卡
+itemGroup.minerfilter=数字型采矿机过滤卡
+item.minerfilter.filter_card.name=数字型采矿机过滤卡
 gui.minerfilter.button.add=添加
 gui.minerfilter.button.back=返回
 gui.minerfilter.button.clear=清空
@@ -28,7 +29,7 @@ gui.minerfilter.main.groups=配置组
 gui.minerfilter.main.name=名称: %s
 gui.minerfilter.main.no_group=没有配置组
 gui.minerfilter.main.saved_filters=保存的过滤器
-gui.minerfilter.main.title=数字采矿机过滤卡
+gui.minerfilter.main.title=数字型采矿机过滤卡
 gui.minerfilter.mode.item=物品
 gui.minerfilter.mode.mod=模组
 gui.minerfilter.mode.pattern=通配

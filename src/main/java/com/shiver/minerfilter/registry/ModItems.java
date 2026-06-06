@@ -3,7 +3,7 @@ package com.shiver.minerfilter.registry;
 import com.shiver.minerfilter.Tags;
 import com.shiver.minerfilter.item.ItemFilterCard;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.creativetab.CreativeTabs;
+import com.shiver.minerfilter.creative.ModCreativeTab;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
@@ -34,7 +34,7 @@ public final class ModItems {
      * 应用不适合放在构造器中的物品设置。
      */
     public static void init() {
-        FILTER_CARD.setCreativeTab(CreativeTabs.MISC);
+        FILTER_CARD.setCreativeTab(ModCreativeTab.INSTANCE);
     }
 
     /**
