@@ -139,6 +139,10 @@ public class ItemFilterCard extends Item {
             return new ActionResult<>(EnumActionResult.SUCCESS, stack);
         }
 
+        if (hand != EnumHand.MAIN_HAND) {
+            return new ActionResult<>(EnumActionResult.PASS, stack);
+        }
+
         if (world.isRemote) {
             DigitalMinerFilter.proxy.openFilterCardGui(player, stack);
         } else {
