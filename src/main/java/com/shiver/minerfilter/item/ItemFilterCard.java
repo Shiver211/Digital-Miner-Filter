@@ -162,6 +162,8 @@ public class ItemFilterCard extends Item {
      */
     @Override
     public void addInformation(ItemStack stack, World world, List<String> tooltip, ITooltipFlag flag) {
+        tooltip.add(I18n.translateToLocal("tooltip.minerfilter.usage.apply"));
+        tooltip.add(I18n.translateToLocal("tooltip.minerfilter.usage.clear"));
         if (stack.hasTagCompound() && stack.getTagCompound().hasKey(FilterCardData.TAG_GROUPS, 9)) {
             NBTTagCompound root = stack.getTagCompound();
             NBTTagList groups = FilterCardData.getGroups(root);

@@ -39,3 +39,5 @@ message.minerfilter.no_group=没有可用配置组。
 tooltip.minerfilter.current=当前: %s
 tooltip.minerfilter.groups=配置组: %s
 tooltip.minerfilter.no_group=未创建配置组
+tooltip.minerfilter.usage.apply=右键数字型采矿机应用
+tooltip.minerfilter.usage.clear=shift右键清空所有配置

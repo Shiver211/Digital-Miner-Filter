@@ -39,3 +39,5 @@ message.minerfilter.no_group=No available group.
 tooltip.minerfilter.current=Current: %s
 tooltip.minerfilter.groups=Groups: %s
 tooltip.minerfilter.no_group=No groups created
+tooltip.minerfilter.usage.apply=Right-click Digital Miner to apply
+tooltip.minerfilter.usage.clear=Shift-right-click to clear all configurations
